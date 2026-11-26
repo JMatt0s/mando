@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Mando PES 6</title>
+  <style>
+    * { box-sizing: border-box; user-select: none; -webkit-user-select: none; touch-action: none; }
+    body {
+      margin: 0; background: #ac8080; color: white; font-family: sans-serif;
+      display: flex; justify-content: space-between; align-items: center;
+      height: 100vh; padding: 20px; overflow: hidden;
+    }
+    .zone { position: relative; width: 42vw; height: 80vh; display: flex; justify-content: center; align-items: center; }
+    .btn {
+      position: absolute; background: #2c2c2c; border: 2px solid #555; color: white;
+      border-radius: 50%; width: 72px; height: 72px; font-size: 20px; font-weight: bold;
+      display: flex; justify-content: center; align-items: center;
+    }
+    .btn:active, .pressed { background: #00a8ff; border-color: #fff; }
+    /* Cruceta */
+    #UP    { top: 10%; }
+    #DOWN  { bottom: 10%; }
+    #LEFT  { left: 5%; }
+    #RIGHT { right: 5%; }
+    /* Botones PS */
+    #THROUGH { top: 10%; color: #4cd137; }
+    #PASS    { bottom: 10%; color: #00a8ff; }
+    #SHOOT   { left: 5%; color: #e84118; }
+    #CROSS   { right: 5%; color: #fbc531; }
+    #SPRINT  { top: -5%; right: 5%; width: 90px; height: 45px; border-radius: 12px; font-size: 16px; }
+  </style>
+</head>
+<body>
+
+  <div class="zone">
+    <div class="btn" id="UP">▲</div>
+    <div class="btn" id="DOWN">▼</div>
+    <div class="btn" id="LEFT">◀</div>
+    <div class="btn" id="RIGHT">▶</div>
+  </div>
+
+  <div class="zone">
+    <div class="btn" id="CORRER">R1</div>
+    <div class="btn" id="CAMBIAR CURSOR">L1</div>
+    <div class="btn" id="estrategia/atacar/defender">l2</div>
+    <dic class="btn" id="controles espaciales">r2</div>
+    <div class="btn" id="PASE ADELANTADO">△</div>
+    <div class="btn" id="PASE CORTO">✕</div>
+    <div class="btn" id="DISPARO">□</div>
+    <div class="btn" id="PASE LARGO">○</div>
+  </div>
+
+  <script>
+    // Conecta automáticamente usando la IP desde la que cargaste la página
+    const ws = new WebSocket(`ws://${window.location.hostname}:8765`);
+
+    document.querySelectorAll('.btn').forEach(btn => {
+      const send = (state, e) => {
+        e.preventDefault();
+        btn.classList.toggle('pressed', state === 'DOWN');
+        if (ws.readyState === WebSocket.OPEN) {
+          ws.send(`${state}:${btn.id}`);
+        }
+      };
+
+      btn.addEventListener('touchstart', (e) => send('DOWN', e));
+      btn.addEventListener('touchend', (e) => send('UP', e));
+      btn.addEventListener('touchcancel', (e) => send('UP', e));
+    });
+  </script>
+</body>
+</html>
